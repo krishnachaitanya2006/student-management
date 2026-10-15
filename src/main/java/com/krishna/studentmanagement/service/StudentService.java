@@ -21,7 +21,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.ArrayList;
 //import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+
+
 
 
 @Service
@@ -30,6 +31,7 @@ public class StudentService
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
 
+    // Beans
     public StudentService(StudentRepository studentRepository, StudentMapper studentMapper)
     {
         this.studentRepository = studentRepository;
@@ -52,6 +54,7 @@ public class StudentService
        return response;
     }
 
+    // return all students
     public Page<Student> getAllStudents(Pageable pageable)
     {
         return studentRepository.findAll(pageable);
@@ -106,6 +109,41 @@ public class StudentService
         StudentResponse response = studentMapper.toResponse(savedStudent);
 
         return response;
+    }
+
+    //find by nameContaining
+    public Page<StudentResponse> findByNameContaining(String name, Pageable pageable) {
+
+        Page<Student> students = studentRepository.findByNameContaining(name, pageable);
+
+        
+        return students.map(studentMapper::toResponse);
+
+    }
+
+    //find by course
+    public List<StudentResponse> findByCourse(String course) {
+
+        List<Student> students = studentRepository.findByCourse(course);
+
+        List<StudentResponse> response = new ArrayList<>();
+
+        for(Student student : students) {
+
+            response.add(studentMapper.toResponse(student));
+        }
+
+        return response;
+
+    }
+
+    public Page<StudentResponse> findByNameContainingAndCourse(String name, String course, Pageable pageable) {
+
+        Page<Student> students = studentRepository.findByNameContainingAndCourse(name, course, pageable);
+
+        //List<StudentResponse> response = new ArrayList<>();
+
+        return students.map(studentMapper::toResponse);
     }
 
 
